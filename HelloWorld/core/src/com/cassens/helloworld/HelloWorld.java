@@ -30,7 +30,7 @@ public class HelloWorld extends ApplicationAdapter {
 
 	private void spawnRaindrop() {
 		Rectangle raindrop = new Rectangle();
-		raindrop.x = MathUtils.random(0, 800 - 64);
+		raindrop.x = MathUtils.random(0+30, 800-64-30);
 		raindrop.y = 480;
 		raindrop.width = 64;
 		raindrop.height = 64;
