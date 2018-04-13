@@ -142,6 +142,8 @@ public class HelloWorld extends ApplicationAdapter {
 		else {
 			if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE))
 				paused = true;
+			if (Gdx.input.isKeyJustPressed(Input.Keys.C))
+				score += 1000;
 			
 			if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A))
 				bucket.x -= 200 * Gdx.graphics.getDeltaTime();
