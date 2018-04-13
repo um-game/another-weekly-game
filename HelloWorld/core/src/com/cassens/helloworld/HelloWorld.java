@@ -18,10 +18,12 @@ public class HelloWorld extends ApplicationAdapter {
 
 	private Texture dropImage;
 	private Texture bucketImage;
+	private Texture portalLeftImage, portalRightImage;
 	private Sound dropSound;
 	private Music rainMusic;
 	private OrthographicCamera camera;
 	private SpriteBatch batch;
+	private Rectangle portalLeft, portalRight;
 	private Rectangle bucket; // use this to store the position of the bucket
 	private Array<Rectangle> raindrops; // use this for the raindrop positions
 	private long lastDropTime; // so we know how long it's been since the last rain drop
@@ -41,6 +43,8 @@ public class HelloWorld extends ApplicationAdapter {
 		// put these into video ram
 		dropImage = new Texture(Gdx.files.internal("droplet.png"));
 		bucketImage = new Texture(Gdx.files.internal("bucket.png"));
+		portalLeftImage = new Texture(Gdx.files.internal("portal_left.png"));
+		portalRightImage = new Texture(Gdx.files.internal("portal_right.png"));
 
 		// load the drop sound effect and the rain background "music"
 		// use this when it is less than 10 secs
@@ -56,12 +60,19 @@ public class HelloWorld extends ApplicationAdapter {
 		// This will make sure the camera always shows us an area of our game
 		// world that is 800x480 units wide.
 		camera.setToOrtho(false, 800, 480);
+		
+		portalLeft = new Rectangle();
+		portalLeft.x = 0;
+		portalLeft.y = 0;
+		portalRight = new Rectangle();
+		portalRight.x = 800-30;
+		portalRight.y = 0;
 
 		batch = new SpriteBatch();
 
 		bucket = new Rectangle();
 		bucket.x = 800 / 2 - 64 / 2;
-		bucket.y = 20;
+		bucket.y = 0;
 		bucket.width = 64;
 		bucket.height = 64;
 
@@ -79,16 +90,14 @@ public class HelloWorld extends ApplicationAdapter {
 
 		batch.setProjectionMatrix(camera.combined);
 
-		if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-
+		if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A))
 			bucket.x -= 200 * Gdx.graphics.getDeltaTime();
-		}
-		if (Gdx.input.isKeyPressed(Input.Keys.RIGHT))
+		if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D))
 			bucket.x += 200 * Gdx.graphics.getDeltaTime();
-		if (bucket.x < 0)
-			bucket.x = 0;
-		if (bucket.x > 800 - 64)
-			bucket.x = 800 - 64;
+		if (bucket.x < 0+30)
+			bucket.x = 800-64-30;
+		if (bucket.x > 800-64-30)
+			bucket.x = 0+30;
 
 		// check how much time has passed since we spawned a new raindrop, and creates a
 		// new one if necessary
@@ -113,6 +122,8 @@ public class HelloWorld extends ApplicationAdapter {
 		}
 
 		batch.draw(bucketImage, bucket.x, bucket.y);
+		batch.draw(portalLeftImage, portalLeft.x, portalLeft.y);
+		batch.draw(portalRightImage, portalRight.x, portalRight.y);
 
 		batch.end();
 
