@@ -21,7 +21,7 @@ import com.badlogic.gdx.math.Rectangle;
 
 public class HelloWorld extends ApplicationAdapter {
 
-	private Texture dropImage, bonusDropImage, negDropImage;
+	private Texture dropImage, bonusDropImage, negDropImage, superNegDropImage;
 	private Texture bucketImage;
 	private Texture portalLeftImage, portalRightImage;
 	private Texture backgroundImage;
@@ -53,7 +53,13 @@ public class HelloWorld extends ApplicationAdapter {
 		raindrops.add(raindrop);
 		lastDropTime = TimeUtils.nanoTime();
 		
-		raindrop.type = ThreadLocalRandom.current().nextInt(1, 3 + 1);
+		if(level > 10) {
+			
+			raindrop.type = ThreadLocalRandom.current().nextInt(1, 4 + 1);
+			
+		} else {
+			raindrop.type = ThreadLocalRandom.current().nextInt(1, 3 + 1);
+		}
 	}
 
 	@Override
@@ -62,6 +68,7 @@ public class HelloWorld extends ApplicationAdapter {
 		dropImage = new Texture(Gdx.files.internal("droplet.png"));
 		bonusDropImage = new Texture(Gdx.files.internal("droplet_green.png"));
 		negDropImage = new Texture(Gdx.files.internal("droplet_red.png"));
+		superNegDropImage = new Texture(Gdx.files.internal("droplet_grey.png"));
 		bucketImage = new Texture(Gdx.files.internal("bucket.png"));
 		portalLeftImage = new Texture(Gdx.files.internal("portal_left.png"));
 		portalRightImage = new Texture(Gdx.files.internal("portal_right.png"));
@@ -83,8 +90,8 @@ public class HelloWorld extends ApplicationAdapter {
 		camera.setToOrtho(false, 800, 480);
 		
 		portalLeft = new Rectangle();
-		portalLeft.x = 0;
-		portalLeft.y = 0;
+		portalLeft.x = 5;
+		portalLeft.y = 5;
 		portalRight = new Rectangle();
 		portalRight.x = 800-30;
 		portalRight.y = 0;
@@ -149,10 +156,10 @@ public class HelloWorld extends ApplicationAdapter {
 				bucket.x -= 200 * Gdx.graphics.getDeltaTime();
 			if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D))
 				bucket.x += 200 * Gdx.graphics.getDeltaTime();
-			if (bucket.x < 0+30)
-				bucket.x = 800-64-30;
-			if (bucket.x > 800-64-30)
-				bucket.x = 0+30;
+			if (bucket.x < 0+25)
+				bucket.x = 800-64-25;
+			if (bucket.x > 800-64-25)
+				bucket.x = 0+25;
 			
 			// Handles mouse clicks
 			Gdx.input.setInputProcessor(new InputAdapter() {
@@ -180,7 +187,7 @@ public class HelloWorld extends ApplicationAdapter {
 				raindrop.y -= 200 * Gdx.graphics.getDeltaTime();
 				// Drop hits the ground
 				if (raindrop.y + 64 < 0) {
-					if (score >= 10 && raindrop.type != 3)
+					if (score >= 10 && (raindrop.type != 3 || raindrop.type != 4))
 						score -= 10;
 					raindrops.removeValue(raindrop, true);
 				}
@@ -196,6 +203,10 @@ public class HelloWorld extends ApplicationAdapter {
 							score -= 20;
 						else
 							score = 0;
+					// Grey drop
+					} else if(raindrop.type == 4) {
+			
+						score -= 100;
 					}
 					raindrops.removeValue(raindrop, true);
 				}
@@ -237,8 +248,11 @@ public class HelloWorld extends ApplicationAdapter {
 					batch.draw(bonusDropImage, raindrop.x, raindrop.y);
 				else if (raindrop.type == 3)
 					batch.draw(negDropImage, raindrop.x, raindrop.y);
-			}
-	
+				else if(raindrop.type == 4)
+					batch.draw(superNegDropImage, raindrop.x, raindrop.y);
+					
+				}
+		
 			batch.draw(bucketImage, bucket.x, bucket.y);
 			batch.draw(portalLeftImage, portalLeft.x, portalLeft.y);
 			batch.draw(portalRightImage, portalRight.x, portalRight.y);
@@ -253,6 +267,7 @@ public class HelloWorld extends ApplicationAdapter {
 		dropImage.dispose();
 		bonusDropImage.dispose();
 		negDropImage.dispose();
+		superNegDropImage.dispose();
 		bucketImage.dispose();
 		portalLeftImage.dispose();
 		portalRightImage.dispose();
