@@ -42,6 +42,7 @@ public class HelloWorld extends ApplicationAdapter {
 	private class Raindrop extends Rectangle {
 		private static final long serialVersionUID = 1L;
 		public int type;
+		public int dropTime;
 	}
 
 	private void spawnRaindrop() {
@@ -50,16 +51,18 @@ public class HelloWorld extends ApplicationAdapter {
 		raindrop.y = 480;
 		raindrop.width = 64;
 		raindrop.height = 64;
+		raindrop.dropTime = ThreadLocalRandom.current().nextInt(200, 300);
 		raindrops.add(raindrop);
 		lastDropTime = TimeUtils.nanoTime();
 		
 		if(level > 10) {
-			
+		
 			raindrop.type = ThreadLocalRandom.current().nextInt(1, 4 + 1);
 			
 		} else {
 			raindrop.type = ThreadLocalRandom.current().nextInt(1, 3 + 1);
 		}
+		
 	}
 
 	@Override
@@ -122,7 +125,6 @@ public class HelloWorld extends ApplicationAdapter {
 
 		raindrops = new Array<Raindrop>();
 		spawnRaindrop();
-
 	}
 
 	@Override
@@ -144,9 +146,8 @@ public class HelloWorld extends ApplicationAdapter {
 				paused = false;
 				start = true;
 			}
-		}
 			
-		else {
+		} else {
 			if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE))
 				paused = true;
 			if (Gdx.input.isKeyJustPressed(Input.Keys.C))
@@ -184,11 +185,19 @@ public class HelloWorld extends ApplicationAdapter {
 	
 			for (Raindrop raindrop : raindrops) {
 				
-				raindrop.y -= 200 * Gdx.graphics.getDeltaTime();
+				raindrop.y -= raindrop.dropTime * Gdx.graphics.getDeltaTime();
 				// Drop hits the ground
 				if (raindrop.y + 64 < 0) {
-					if (score >= 10 && (raindrop.type != 3 || raindrop.type != 4))
+					
+					boolean decrease = true;
+					
+					if(raindrop.type == 3 || raindrop.type == 4) {
+						decrease = false;
+					}
+					
+					if (score >= 10 && !(raindrop.type != 3 || raindrop.type != 4)) {
 						score -= 10;
+					}
 					raindrops.removeValue(raindrop, true);
 				}
 				// Player catches the drop
@@ -204,13 +213,11 @@ public class HelloWorld extends ApplicationAdapter {
 						else
 							score = 0;
 					// Grey drop
-					} else if(raindrop.type == 4) {
-			
+					} else if(raindrop.type == 4)
 						score -= 100;
-					}
+					
 					raindrops.removeValue(raindrop, true);
 				}
-	
 			}
 	
 			// Start drawing
@@ -228,7 +235,6 @@ public class HelloWorld extends ApplicationAdapter {
 					counter = 0;
 				}
 			}
-				
 			
 			if (score/100.0 >= level) {
 				level++;
@@ -249,9 +255,8 @@ public class HelloWorld extends ApplicationAdapter {
 				else if (raindrop.type == 3)
 					batch.draw(negDropImage, raindrop.x, raindrop.y);
 				else if(raindrop.type == 4)
-					batch.draw(superNegDropImage, raindrop.x, raindrop.y);
-					
-				}
+					batch.draw(superNegDropImage, raindrop.x, raindrop.y);		
+			}
 		
 			batch.draw(bucketImage, bucket.x, bucket.y);
 			batch.draw(portalLeftImage, portalLeft.x, portalLeft.y);
@@ -259,7 +264,6 @@ public class HelloWorld extends ApplicationAdapter {
 	
 			batch.end();
 		}
-
 	}
 
 	@Override
@@ -276,11 +280,4 @@ public class HelloWorld extends ApplicationAdapter {
 		rainMusic.dispose();
 		batch.dispose();
 	}
-	
-	// Where to go from here
-		// 1. add a score that shows as you collect drops, decreases if you miss
-		// 2. be able to pause and continue
-		// 3. add different types of rain drops
-		// 4. move the bucket up and down
-		// 5. have different levels
 }
