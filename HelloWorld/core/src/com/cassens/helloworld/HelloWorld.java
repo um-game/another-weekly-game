@@ -195,7 +195,7 @@ public class HelloWorld extends ApplicationAdapter {
 						decrease = false;
 					}
 					
-					if (score >= 10 && !(raindrop.type != 3 || raindrop.type != 4)) {
+					if (score >= 10 && decrease == true) {
 						score -= 10;
 					}
 					raindrops.removeValue(raindrop, true);
